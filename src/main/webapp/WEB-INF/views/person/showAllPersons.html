@@ -5,6 +5,15 @@
     <title>All Persons</title>
 </head>
 <body>
+<br/>
+<form th:action="@{/persons/search}">
+    <label></label>
+    <label for="surnameLike">Write surname: </label>
+    <input type="text" id="surnameLike" name="surnameLike"/>
+    <input type="submit" value="Search">
+</form>
+<br/>
+<br/>
 <div th:each="person : ${persons}">
     <a th:href="@{/persons/{id}(id=${person.getId()})}"
        th:text="${person.getSurname() + ' ' + person.getName() + ' ' + person.getPatronymic()}">VALUE</a>

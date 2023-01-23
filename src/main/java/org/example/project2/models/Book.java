@@ -1,14 +1,19 @@
 package org.example.project2.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Book")
 public class Book {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,15 +24,19 @@ public class Book {
     private Person owner;
 
     @Column(name = "name")
+    @NotEmpty(message = "Book name should be not empty")
     private String name;
 
     @Column(name = "author_name")
+    @NotEmpty(message = "Author name should be not empty")
     private String authorName;
 
     @Column(name = "author_surname")
+    @NotEmpty(message = "Author surname should be not empty")
     private String authorSurname;
 
     @Column(name = "year_of_publishing")
+    @Min(value = 1700, message = "Book year of publishing should be bigger than 1700")
     private int yearOfPublishing;
 
     @Column(name = "date_of_taken_away")
@@ -37,6 +46,9 @@ public class Book {
 
     @Transient
     private boolean overdue;
+
+    @Transient
+    private int storageDays;
 
     public int getId() {
         return id;
@@ -100,6 +112,14 @@ public class Book {
 
     public void setOverdue(boolean overdue) {
         this.overdue = overdue;
+    }
+
+    public int getStorageDays() {
+        return storageDays;
+    }
+
+    public void setStorageDays(int storageDays) {
+        this.storageDays = storageDays;
     }
 
     @Override

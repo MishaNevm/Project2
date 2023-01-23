@@ -1,5 +1,6 @@
 package org.example.project2.services;
 
+import org.example.project2.models.Book;
 import org.example.project2.models.Person;
 import org.example.project2.repositories.PersonRepository;
 import org.hibernate.Hibernate;
@@ -17,9 +18,11 @@ import java.util.Objects;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final BookService bookService;
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, BookService bookService) {
         this.personRepository = personRepository;
+        this.bookService = bookService;
     }
 
     public List<Person> findAll(Integer page, Integer personForPage, Boolean sortByYear) {
@@ -32,7 +35,7 @@ public class PersonService {
         } else return findAll();
     }
 
-    public List<Person> findAllByEmail (String email) {
+    public List<Person> findAllByEmail(String email) {
         return personRepository.findByEmail(email);
     }
 
@@ -52,32 +55,41 @@ public class PersonService {
         return personRepository.findAll(PageRequest.of(page, personForPage, Sort.by("age"))).getContent();
     }
 
+    public List<Person> findBySurnameLike(String surnameLike) {
+        if (surnameLike != null) {
+            return personRepository.findBySurnameLike(surnameLike + "%");
+        } else return null;
+    }
+
     public Person findOne(int id) {
         Person person = personRepository.findById(id).orElse(null);
-        Hibernate.initialize(Objects.requireNonNull(person).getBooks());
+        Objects.requireNonNull(person).getBooks()
+                .forEach(a -> a.setOverdue
+                        (bookService.calculateStorageDays(a.getDateOfTakenAway()) >= BookService.MAX_STORAGE_DAYS));
         return person;
     }
 
+
     @Transactional
-    public void save (Person person) {
+    public void save(Person person) {
         person.setAge(calculateAge(person.getDateOfBirth()));
         personRepository.save(person);
     }
 
-    private int calculateAge(Date dateOfBirth) {
+    public int calculateAge(Date dateOfBirth) {
         Date now = new Date();
-        return (int) ((dateOfBirth.getTime() - now.getTime())
-                / (1000 * 60 * 60 * 24 * 365));
+        return (int) ((now.getTime() - dateOfBirth.getTime())
+                / (1000 * 60 * 60 * 24) / 365);
     }
 
     @Transactional
-    public void update (int id, Person person) {
+    public void update(int id, Person person) {
         person.setId(id);
         personRepository.save(person);
     }
 
     @Transactional
-    public void delete (int id) {
+    public void delete(int id) {
         personRepository.deleteById(id);
     }
 

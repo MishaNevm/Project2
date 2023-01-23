@@ -41,7 +41,6 @@ public class Person {
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Past(message = "Date of birth should be in the past")
     private Date dateOfBirth;
 
     @Column(name = "age")

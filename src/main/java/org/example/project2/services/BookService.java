@@ -15,18 +15,20 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class BookService {
 
+    public static final int MAX_STORAGE_DAYS = 10;
+
     private final BookRepository bookRepository;
 
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> findAll(int page, int bookForPage, boolean sortByYearOfPublishing) {
-        if (sortByYearOfPublishing && bookForPage > 1) {
+    public List<Book> findAll(Integer page, Integer bookForPage, Boolean sortByYearOfPublishing) {
+        if (sortByYearOfPublishing != null && sortByYearOfPublishing && bookForPage != null) {
             return findAllWithSortByYearOfEditionAndPagination(page, bookForPage);
-        } else if (sortByYearOfPublishing) {
+        } else if (sortByYearOfPublishing != null && sortByYearOfPublishing) {
             return findAllWithSortByYearOfPublishing();
-        } else if (bookForPage > 1) {
+        } else if (bookForPage != null) {
             return findAllWithPagination(page, bookForPage);
         } else return findAll();
     }
@@ -48,18 +50,25 @@ public class BookService {
         return bookRepository.findAll(PageRequest.of(page, bookForPage, Sort.by("yearOfPublishing"))).getContent();
     }
 
-    public Book findOne(int id) {
-        Book book = bookRepository.findById(id).orElse(new Book());
-        book.setOverdue(calculateOverdue(book.getDateOfTakenAway()));
-        return book;
+    public List<Book> findByNameLike(String nameLike) {
+        if (nameLike != null) {
+            return bookRepository.findByNameLike(nameLike);
+        } else return null;
     }
 
-    private boolean calculateOverdue(Date dateOfTakenAway) {
-        if (dateOfTakenAway == null) return false;
+    public Book findOne(int id) {
+        Book book = bookRepository.findById(id).orElse(new Book());
+        int storageDays = calculateStorageDays(book.getDateOfTakenAway());
+        book.setOverdue(storageDays >= MAX_STORAGE_DAYS);
+        book.setStorageDays(storageDays);
+        return book;
+
+    }
+
+    protected int calculateStorageDays(Date dateOfTakenAway) {
         Date now = new Date();
-        int diffInDays = (int) ((dateOfTakenAway.getTime() - now.getTime())
+        return (int) ((dateOfTakenAway.getTime() - now.getTime())
                 / (1000 * 60 * 60 * 24));
-        return diffInDays >= 10;
     }
 
     @Transactional
