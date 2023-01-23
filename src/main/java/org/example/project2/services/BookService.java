@@ -74,9 +74,16 @@ public class BookService {
     }
 
     @Transactional
-    public void updateOwner(Person owner, int id, Book book) {
+    public void setOwner(Person owner, int id, Book book) {
         book.setOwner(owner);
         book.setDateOfTakenAway(new Date());
+        book.setId(id);
+        bookRepository.save(book);
+    }
+
+    @Transactional
+    public void deleteOwner(int id, Book book) {
+        book.setOwner(null);
         book.setId(id);
         bookRepository.save(book);
     }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${person.getName()}">VALUE</title>
+</head>
+<body>
+<p th:text="${person.getSurname()  + ', ' + person.getName() + ' '
+ + person.getPatronymic()}"></p>
+
+<p th:text="${'Age: '+ person.getAge()}"></p>
+
+<p th:text="${'Date of birth: '+ person.getDateOfBirth()}"></p>
+
+<p th:text="${'Email: '+ person.getEmail()}"></p>
+<br/>
+<hr/>
+<div th:if="${person.getBooks().isEmpty()}">
+    <p th:text="${person.getName() + 's book list is empty'}"></p>
+    <a href="/books">See books list</a>
+</div>
+<div th:unless="${person.getBooks().isEmpty()}">
+    <p>Книги: </p>
+    <div th:each="book : ${person.getBooks()}">
+        <a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName()+', '+book.getAuthorName()+
+     ', '+book.getAuthorSurname()+', '+book.getYearOfPublishing()}">VALUE</a>
+    </div>
+    <br/>
+    <form th:method="PATCH" th:action="@{/persons/{id}/unAppointAllFromPerson(id=${person.getId()})}" th:object="${person}">
+        <input type="submit" value="Clean books list"/>
+    </form>
+    <br/>
+</div>
+<a th:href="@{/persons/{id}/edit(id=${person.getId()})}">Update</a>
+<br/>
+<form th:method="DELETE" th:action="@{/persons/{id}(id=${person.getId()})}" th:object="${person}">
+    <input type="submit" value="Delete"/>
+</form>
+</body>
+</html>

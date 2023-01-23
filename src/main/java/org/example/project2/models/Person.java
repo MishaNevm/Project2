@@ -1,6 +1,10 @@
 package org.example.project2.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -16,20 +20,28 @@ public class Person {
     private int id;
 
     @Column(name = "name")
+    @Size(min = 1, max = 30, message = "Name should be in range from 1 to 30")
+    @NotEmpty(message = "Name should not be empty")
     private String name;
 
     @Column(name = "surname")
+    @Size(min = 1, max = 50, message = "Surname should be in range from 1 to 50")
+    @NotEmpty(message = "Surname should not be empty")
     private String surname;
 
     @Column(name = "patronymic")
+    @Size(min = 1, max = 30, message = "Patronymic should be in range from 1 to 30")
+    @NotEmpty(message = "Patronymic should not be empty")
     private String patronymic;
 
     @Column(name = "email")
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Date of birth should be in the past")
     private Date dateOfBirth;
 
     @Column(name = "age")
