@@ -1,9 +1,8 @@
 package org.example.project2.services;
 
-import org.example.project2.models.Book;
 import org.example.project2.models.Person;
 import org.example.project2.repositories.PersonRepository;
-import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,10 @@ import java.util.Objects;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final BookService bookService;
 
-    public PersonService(PersonRepository personRepository, BookService bookService) {
+    @Autowired
+    public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
-        this.bookService = bookService;
     }
 
     public List<Person> findAll(Integer page, Integer personForPage, Boolean sortByYear) {
@@ -39,7 +37,7 @@ public class PersonService {
         return personRepository.findByEmail(email);
     }
 
-    private List<Person> findAll() {
+    public List<Person> findAll() {
         return personRepository.findAll();
     }
 
@@ -65,8 +63,16 @@ public class PersonService {
         Person person = personRepository.findById(id).orElse(null);
         Objects.requireNonNull(person).getBooks()
                 .forEach(a -> a.setOverdue
-                        (bookService.calculateStorageDays(a.getDateOfTakenAway()) >= BookService.MAX_STORAGE_DAYS));
+                        (BookService.calculateStorageDays(a.getDateOfTakenAway()) >= BookService.MAX_STORAGE_DAYS));
         return person;
+    }
+    @Transactional
+    public void unAppointAll(Person person) {
+        person.getBooks().forEach(a -> {
+            a.setOwner(null);
+            a.setDateOfTakenAway(null);
+        });
+        person.setBooks(null);
     }
 
 

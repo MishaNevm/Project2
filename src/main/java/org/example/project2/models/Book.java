@@ -1,12 +1,9 @@
 package org.example.project2.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -36,7 +33,6 @@ public class Book {
     private String authorSurname;
 
     @Column(name = "year_of_publishing")
-    @Min(value = 1700, message = "Book year of publishing should be bigger than 1700")
     private int yearOfPublishing;
 
     @Column(name = "date_of_taken_away")

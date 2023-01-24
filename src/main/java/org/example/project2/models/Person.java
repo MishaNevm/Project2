@@ -3,7 +3,6 @@ package org.example.project2.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -131,13 +130,11 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return id == person.id && age == person.age && Objects.equals(name, person.name)
-                && Objects.equals(surname, person.surname) && Objects.equals(patronymic, person.patronymic)
-                && Objects.equals(email, person.email) && Objects.equals(dateOfBirth, person.dateOfBirth);
+        return age == person.age && Objects.equals(name, person.name) && Objects.equals(surname, person.surname) && Objects.equals(patronymic, person.patronymic) && Objects.equals(email, person.email) && Objects.equals(dateOfBirth, person.dateOfBirth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, surname, patronymic, email, dateOfBirth, age);
+        return Objects.hash(name, surname, patronymic, email, dateOfBirth, age);
     }
 }

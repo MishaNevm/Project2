@@ -19,6 +19,7 @@ public class BookYearOfPublishingValidator implements Validator {
         Book book = (Book) target;
         if (book.getYearOfPublishing() > LocalDate.now().getYear()) {
             errors.rejectValue("yearOfPublishing", "", "Book should be not from future...");
-        }
+        } else if (book.getYearOfPublishing() < 1800)
+            errors.rejectValue("yearOfPublishing","","Book should be publishing after 1800 year");
     }
 }

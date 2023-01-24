@@ -20,12 +20,12 @@
     <a href="/books">See books list</a>
 </div>
 <div th:unless="${person.getBooks().isEmpty()}">
-    <p>Книги: </p>
+    <p>Books: </p>
     <div th:each="book : ${person.getBooks()}">
         <a th:if="${book.isOverdue()}" style="color: red" th:href="@{/books/{id}(id=${book.getId()})}"
            th:text="${book.getName()+', '+book.getAuthorName()+
      ', '+book.getAuthorSurname()+', '+book.getYearOfPublishing()}">VALUE</a>
-        <a th:unless="${book.isOverdue()}" style="color: red" th:href="@{/books/{id}(id=${book.getId()})}"
+        <a th:unless="${book.isOverdue()}" th:href="@{/books/{id}(id=${book.getId()})}"
            th:text="${book.getName()+', '+book.getAuthorName()+
      ', '+book.getAuthorSurname()+', '+book.getYearOfPublishing()}">VALUE</a>
     </div>

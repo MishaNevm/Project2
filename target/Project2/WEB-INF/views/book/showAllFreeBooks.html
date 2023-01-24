@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Free books</title>
+</head>
+<body>
+<p th:if="${books.isEmpty()}">No free books</p>
+<div th:unless="${books.isEmpty()}" th:each="book : ${books}">
+  <a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getName() + ', ' + book.getYear()}">VALUE</a>
+</div>
+<br/>
+<hr/>
+<a href="/books/new">Add book</a>
+</body>
+</html>

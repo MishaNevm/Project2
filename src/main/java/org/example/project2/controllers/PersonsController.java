@@ -1,10 +1,10 @@
 package org.example.project2.controllers;
 
-import org.example.project2.dao.PersonDAO;
 import org.example.project2.models.Person;
 import org.example.project2.services.PersonService;
 import org.example.project2.util.PersonAgeValidator;
 import org.example.project2.util.PersonEmailValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class PersonsController {
 
     private final PersonService personService;
-    private final PersonDAO personDAO;
     private final PersonEmailValidator personEmailValidator;
     private final PersonAgeValidator personAgeValidator;
 
-
-    public PersonsController(PersonService personService, PersonDAO personDAO, PersonEmailValidator personEmailValidator, PersonAgeValidator personAgeValidator) {
+    @Autowired
+    public PersonsController(PersonService personService, PersonEmailValidator personEmailValidator, PersonAgeValidator personAgeValidator) {
         this.personService = personService;
-        this.personDAO = personDAO;
         this.personEmailValidator = personEmailValidator;
         this.personAgeValidator = personAgeValidator;
     }
@@ -42,8 +40,8 @@ public class PersonsController {
     }
 
     @PatchMapping("/{id}/unAppointAllFromPerson")
-    public String unAppointAll(@PathVariable("id") int id) {
-        personDAO.unAppointAll(id);
+    public String unAppointAll(@PathVariable("id") int id, @ModelAttribute("person") Person person) {
+        personService.unAppointAll(person);
         return "redirect:/persons/" + id;
     }
 

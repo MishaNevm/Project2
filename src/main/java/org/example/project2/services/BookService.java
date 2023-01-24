@@ -3,6 +3,7 @@ package org.example.project2.services;
 import org.example.project2.models.Book;
 import org.example.project2.models.Person;
 import org.example.project2.repositories.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
+
+    @Autowired
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
@@ -52,20 +55,21 @@ public class BookService {
 
     public List<Book> findByNameLike(String nameLike) {
         if (nameLike != null) {
-            return bookRepository.findByNameLike(nameLike);
+            return bookRepository.findByNameLike(nameLike + "%");
         } else return null;
     }
 
     public Book findOne(int id) {
         Book book = bookRepository.findById(id).orElse(new Book());
+        if (book.getDateOfTakenAway() != null){
         int storageDays = calculateStorageDays(book.getDateOfTakenAway());
         book.setOverdue(storageDays >= MAX_STORAGE_DAYS);
-        book.setStorageDays(storageDays);
+        book.setStorageDays(storageDays);}
         return book;
 
     }
 
-    protected int calculateStorageDays(Date dateOfTakenAway) {
+    protected static int calculateStorageDays(Date dateOfTakenAway) {
         Date now = new Date();
         return (int) ((dateOfTakenAway.getTime() - now.getTime())
                 / (1000 * 60 * 60 * 24));
@@ -83,18 +87,22 @@ public class BookService {
     }
 
     @Transactional
-    public void setOwner(Person owner, int id, Book book) {
-        book.setOwner(owner);
-        book.setDateOfTakenAway(new Date());
-        book.setId(id);
-        bookRepository.save(book);
+    public void appoint(int id, Person owner) {
+        bookRepository.findById(id).ifPresent(
+                book -> {
+                    book.setOwner(owner);
+                    book.setDateOfTakenAway(new Date());
+                }
+        );
     }
 
     @Transactional
-    public void deleteOwner(int id, Book book) {
-        book.setOwner(null);
-        book.setId(id);
-        bookRepository.save(book);
+    public void unAppoint(int id) {
+        bookRepository.findById(id).ifPresent(
+                book -> {
+                    book.setOwner(null);
+                    book.setDateOfTakenAway(null);
+                });
     }
 
     @Transactional

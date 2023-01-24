@@ -1,5 +1,6 @@
 package org.example.project2.util;
 
+import jakarta.validation.constraints.NotNull;
 import org.example.project2.models.Person;
 import org.example.project2.services.PersonService;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class PersonEmailValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Person person = (Person) target;
         List<Person> personList = personService.findAllByEmail(person.getEmail());
-        if (!personList.isEmpty() && !personList.get(0).equals(person)) {
+        if (!personList.get(0).getEmail().equals(person.getEmail())) {
             errors.rejectValue("email", "", "This email is already in use");
         }
     }
