@@ -15,17 +15,14 @@
 <p th:text="${'Email: '+ person.getEmail()}"></p>
 <br/>
 <hr/>
-<div th:if="${person.getBooks().isEmpty()}">
+<div th:if="${books}">
     <p th:text="${person.getName() + 's book list is empty'}"></p>
     <a href="/books">See books list</a>
 </div>
-<div th:unless="${person.getBooks().isEmpty()}">
+<div th:unless="${books}">
     <p>Books: </p>
-    <div th:each="book : ${person.getBooks()}">
-        <a th:if="${book.isOverdue()}" style="color: red" th:href="@{/books/{id}(id=${book.getId()})}"
-           th:text="${book.getName()+', '+book.getAuthorName()+
-     ', '+book.getAuthorSurname()+', '+book.getYearOfPublishing()}">VALUE</a>
-        <a th:unless="${book.isOverdue()}" th:href="@{/books/{id}(id=${book.getId()})}"
+    <div th:each="book : ${books}">
+        <a th:style="${book.isOverdue()} ? 'color: red' : 'color: black'" th:href="@{/books/{id}(id=${book.getId()})}"
            th:text="${book.getName()+', '+book.getAuthorName()+
      ', '+book.getAuthorSurname()+', '+book.getYearOfPublishing()}">VALUE</a>
     </div>

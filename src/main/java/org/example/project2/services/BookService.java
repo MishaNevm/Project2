@@ -27,11 +27,11 @@ public class BookService {
     }
 
     public List<Book> findAll(Integer page, Integer bookForPage, Boolean sortByYearOfPublishing) {
-        if (sortByYearOfPublishing != null && sortByYearOfPublishing && bookForPage != null) {
+        if (sortByYearOfPublishing != null && sortByYearOfPublishing && page != null && bookForPage != null) {
             return findAllWithSortByYearOfEditionAndPagination(page, bookForPage);
         } else if (sortByYearOfPublishing != null && sortByYearOfPublishing) {
             return findAllWithSortByYearOfPublishing();
-        } else if (bookForPage != null) {
+        } else if (page != null && bookForPage != null) {
             return findAllWithPagination(page, bookForPage);
         } else return findAll();
     }
@@ -61,17 +61,18 @@ public class BookService {
 
     public Book findOne(int id) {
         Book book = bookRepository.findById(id).orElse(new Book());
-        if (book.getDateOfTakenAway() != null){
-        int storageDays = calculateStorageDays(book.getDateOfTakenAway());
-        book.setOverdue(storageDays >= MAX_STORAGE_DAYS);
-        book.setStorageDays(storageDays);}
+        if (book.getDateOfTakenAway() != null) {
+            int storageDays = calculateStorageDays(book.getDateOfTakenAway());
+            book.setOverdue(storageDays >= MAX_STORAGE_DAYS);
+            book.setStorageDays(storageDays);
+        }
         return book;
 
     }
 
     protected static int calculateStorageDays(Date dateOfTakenAway) {
         Date now = new Date();
-        return (int) ((dateOfTakenAway.getTime() - now.getTime())
+        return (int) ((now.getTime() - dateOfTakenAway.getTime())
                 / (1000 * 60 * 60 * 24));
     }
 
@@ -83,6 +84,7 @@ public class BookService {
     @Transactional
     public void update(int id, Book book) {
         book.setId(id);
+        book.setOwner(bookRepository.findById(id).get().getOwner());
         bookRepository.save(book);
     }
 

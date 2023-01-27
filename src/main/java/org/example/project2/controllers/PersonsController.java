@@ -36,6 +36,7 @@ public class PersonsController {
     @GetMapping("/{id}")
     public String showOnePerson(@PathVariable("id") int id, Model model) {
         model.addAttribute("person", personService.findOne(id));
+        model.addAttribute("books", personService.findBooksByPersonId(id));
         return "person/showOnePerson";
     }
 
@@ -49,7 +50,7 @@ public class PersonsController {
     public String searchPersonBySurnameLike
             (Model model, @RequestParam(value = "surnameLike", required = false) String surnameLike) {
         model.addAttribute("persons", personService.findBySurnameLike(surnameLike));
-        return "person/serachPersonBySurnameLike";
+        return "person/searchPersonBySurnameLike";
     }
 
     @GetMapping("/new")

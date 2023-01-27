@@ -1,5 +1,6 @@
 package org.example.project2.services;
 
+import org.example.project2.models.Book;
 import org.example.project2.models.Person;
 import org.example.project2.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,11 @@ public class PersonService {
     }
 
     public List<Person> findAll(Integer page, Integer personForPage, Boolean sortByYear) {
-        if (personForPage != null && sortByYear != null && sortByYear) {
+        if (page != null && personForPage != null && sortByYear != null && sortByYear) {
             return findAllWithSortByAgeAndPagination(page, personForPage);
         } else if (sortByYear != null && sortByYear) {
             return findAllWithSortByAge();
-        } else if (personForPage != null) {
+        } else if (page != null && personForPage != null) {
             return findAllWithPagination(page, personForPage);
         } else return findAll();
     }
@@ -60,12 +61,17 @@ public class PersonService {
     }
 
     public Person findOne(int id) {
-        Person person = personRepository.findById(id).orElse(null);
-        Objects.requireNonNull(person).getBooks()
-                .forEach(a -> a.setOverdue
-                        (BookService.calculateStorageDays(a.getDateOfTakenAway()) >= BookService.MAX_STORAGE_DAYS));
-        return person;
+        return personRepository.findById(id).orElse(null);
     }
+
+    public List<Book> findBooksByPersonId(int id) {
+        List<Book> books = findOne(id).getBooks();
+        if (!books.isEmpty())
+            books.forEach(a -> a.setOverdue(BookService.calculateStorageDays
+                    (a.getDateOfTakenAway()) >= BookService.MAX_STORAGE_DAYS));
+        return books;
+    }
+
     @Transactional
     public void unAppointAll(Person person) {
         person.getBooks().forEach(a -> {
